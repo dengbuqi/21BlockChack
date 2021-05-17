@@ -36,6 +36,7 @@ const btnJoin = document.getElementById("btnJoin");
 const txtGameId = document.getElementById("txtGameId");
 const divPlayers = document.getElementById("divPlayers");
 const divBoard = document.getElementById("divBoard");
+const btnBuy = document.getElementById("btnBuy");
 
 // CSS
 let nickname = document.querySelector("#nickname");
@@ -57,6 +58,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
+const contractAddress = '0xE38e21b3e6a952bfB11de154E52B22828D58c0D3'
 const ABI = [
 	{
 		"inputs": [
@@ -99,7 +101,7 @@ const ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "depositFunds",
+		"name": "buyChips",
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
@@ -108,6 +110,30 @@ const ABI = [
 		"inputs": [],
 		"name": "getNewCard",
 		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerHand",
+		"outputs": [
+			{
+				"internalType": "uint8[]",
+				"name": "",
+				"type": "uint8[]"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -192,6 +218,24 @@ const ABI = [
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferChips",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "_amount",
 				"type": "uint256"
@@ -201,6 +245,10 @@ const ABI = [
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ]
 
@@ -271,10 +319,16 @@ window.addEventListener("load", function () {
         window.web3.eth.getBlockNumber().then(function(blockNumber) {
           console.log(`Block Number: ${blockNumber}`);
         })
+
+        SmartContract = new window.web3.eth.Contract(ABI, contractAddress, account);
         return true;
       }
       return false;
     }
+
+    btnBuy.addEventListener("click", (e)=>{
+      console.log(SmartContract.methods.playerBalance('0xdD338a35100fa9418Da8ff4bc544D2527502bAED').call());
+    });
 
     btnCreate.addEventListener("click", (e) => {
       $("#loading-screen").removeClass("hide-element");
