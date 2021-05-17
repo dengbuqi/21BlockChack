@@ -36,7 +36,10 @@ const btnJoin = document.getElementById("btnJoin");
 const txtGameId = document.getElementById("txtGameId");
 const divPlayers = document.getElementById("divPlayers");
 const divBoard = document.getElementById("divBoard");
-
+const balance = document.getElementById("balance");
+const account = document.getElementById("account");
+const chipsamount = document.getElementById("chipsamount");
+const buy = document.getElementById("buy");
 // CSS
 let nickname = document.querySelector("#nickname");
 let avatar = document.querySelectorAll(".slideAvatars");
@@ -209,13 +212,48 @@ let SmartContract = null;
 
 ws.addEventListener("open", () => {
   console.log("We are connected!")
-  if (window.ethereum._state.accounts!=undefined){
-    console.log(window.ethereum._state.accounts);
-    nickname.value = window.ethereum._state.accounts[0]
+  if (window.ethereum.selectedAddress!=undefined){
+    nickname.value = window.ethereum.selectedAddress;
+    account.innerText = nickname.value;
   }else{
     console.log('No account~');
   }
 });
+
+const ethLogin = async () => {
+  if (window.ethereum) {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    nickname.value = window.ethereum.selectedAddress;
+    account.innerText = nickname.value;
+    window.web3 = new Web3(window.ethereum);
+    // window.web3.eth.sendTransaction({from: '0x475Db0B6e13A63aE7e702C68994b11E411D5b71E', data: '0x6C3d60B879dC894A9736EbCeBc9917AaD46e6B01'})
+    // .on('sending', function(payload){
+    //   console.log(payload);
+    // })
+    window.web3.eth.getProtocolVersion().then(function(protocolVersion) {
+      console.log(`Protocol Version: ${protocolVersion}`);
+    })
+
+    window.web3.eth.getGasPrice().then(function(gasPrice) {
+      console.log(`Gas Price: ${gasPrice}`);
+    })
+
+    window.web3.eth.getBlockNumber().then(function(blockNumber) {
+      console.log(`Block Number: ${blockNumber}`);
+    })
+    return true;
+  }
+  return false;
+}
+
+const buyChips = async (addr, chipsamount) => {
+   if (window.ethereum.selectedAddress === addr){
+    console.log(addr);
+    console.log(chipsamount);
+    return true;
+  }
+  return false;
+}
 
 // wiring events
 window.addEventListener("load", function () {
@@ -249,32 +287,6 @@ window.addEventListener("load", function () {
       }, 50);
     });
 
-    const ethLogin = async () => {
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const account = accounts[0];
-        nickname.value = account
-        console.log(account)
-        window.web3 = new Web3(window.ethereum);
-        // window.web3.eth.sendTransaction({from: '0x475Db0B6e13A63aE7e702C68994b11E411D5b71E', data: '0x6C3d60B879dC894A9736EbCeBc9917AaD46e6B01'})
-        // .on('sending', function(payload){
-        //   console.log(payload);
-        // })
-        window.web3.eth.getProtocolVersion().then(function(protocolVersion) {
-          console.log(`Protocol Version: ${protocolVersion}`);
-        })
-
-        window.web3.eth.getGasPrice().then(function(gasPrice) {
-          console.log(`Gas Price: ${gasPrice}`);
-        })
-
-        window.web3.eth.getBlockNumber().then(function(blockNumber) {
-          console.log(`Block Number: ${blockNumber}`);
-        })
-        return true;
-      }
-      return false;
-    }
 
     btnCreate.addEventListener("click", (e) => {
       $("#loading-screen").removeClass("hide-element");
@@ -301,6 +313,11 @@ window.addEventListener("load", function () {
       ethLogin();
       login.disabled = true;
     });
+
+
+    buy.addEventListener("click", (e) => {
+      buyChips(account.innerText, chipsamount.value);
+    })
     // ***
   }, 200);
 });
