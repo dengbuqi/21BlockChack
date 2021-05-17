@@ -10,7 +10,16 @@ const WebSocket = require("ws")
 
 const wss = new WebSocket.Server({ server:server })
 
-
+// update the game log to Eth blockchain
+function update2BlockChain(method, log) {
+  /*  method = 
+      deck
+      update
+      resetGameState
+  */
+  console.log(method);
+  console.log(log);
+}
 
 
 // Serve all the static files, (ex. index.html app.js style.css)
@@ -19,18 +28,6 @@ app.use(express.static("public/"));
 server.listen(PORT, () =>
   console.log(`Listening on ${process.env.PORT} or 3000`)
 );
-
-
-
-
-
-
-
-
-
-
-
-
 
 // hashmap clients
 const clients = {};
@@ -43,13 +40,8 @@ let dealer = null;
 let gameOn = null;
 let player = null;
 
-
-
-
-
-
 wss.on("connection", (ws) => { // wsServer || wss AND request || connection
-  console.log("FIRE BITCH")
+  console.log("FIRE")
   // Someone trying to connect
   // const connection = connection.accept(null, connection.origin);
   ws.on("open", () => console.log("opened")); // connection || wss
@@ -57,9 +49,17 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
     console.log("closed");
   });
 
+
+  //################ What we need to upload to blockchain ######################//
+  /*
+      deck
+      update
+      resetGameState
+  */
+  //################ What we need to upload to blockchain ######################//
   ws.on("message", (message) => { // connection || wss
     const result = JSON.parse(message);
-    // console.log(message)
+    // console.log(result.method);
 
     // a user want to create a new game
     if (result.method === "create") {
@@ -83,6 +83,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         players: [],
         dealer: dealer,
         gameOn: gameOn,
+        roundId: null, // each round's ID
+        roundState: null, // for each round, each status' ID. 
         player: player,
         spectators: [],
         // "lobbySpectators": [],
@@ -97,6 +99,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
           {},
           {},
         ],
+        deck: null,
       };
 
       const payLoad = {
@@ -128,7 +131,16 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
 
       theClient.nickname = nickname;
       theClient.avatar = avatar;
-
+      
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      // set balance
+      theClient.balance = 5000;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      
       if (game.spectators.length >= 7) {
         // Max players reached
         return;
@@ -261,17 +273,25 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
     if (result.method === "deck") {
       const players = result.players;
       const spectators = result.spectators;
+      const gameId = result.gameId;
+      const game = games[gameId];
       const deck = result.deck;
       const clientDeal = result.clientDeal;
       const gameOn = result.gameOn;
-
       const payLoad = {
         method: "deck",
+        players: players,
+        dealer: dealer,
         deck: deck,
         gameOn: gameOn,
         clientDeal: clientDeal,
       };
-
+      game.roundId = roundId();
+      game.roundState = result.method;
+      game.deck = deck;
+      game.players = players;
+      game.dealer = dealer;
+      update2BlockChain(result.method, game);
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -341,6 +361,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       const dealer = result.dealer;
       const deck = result.deck;
       const spectators = result.spectators;
+      const gameId = result.gameId;
+      const game = games[gameId];
       const gameOn = result.gameOn;
       const dealersTurn = result.dealersTurn;
 
@@ -351,7 +373,12 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         deck: deck,
         gameOn: gameOn,
       };
-
+      game.roundState = result.method;
+      game.deck = deck;
+      game.players = players;
+      game.dealer = dealer;
+      game.deck = deck;
+      update2BlockChain(result.method, game);
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -390,7 +417,6 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         method: "showSum",
         players: players,
       };
-
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -482,6 +508,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
+
     }
 
     if (result.method === "updateDealerCards") {
@@ -716,7 +743,6 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         method: "finalCompare",
         // "players": players
       };
-
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -733,7 +759,11 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         method: "resetGameState",
         game: game,
       };
-
+      game.roundState = result.method;
+      update2BlockChain(result.method, game);
+      game.roundId = null;
+      game.roundState = null;
+      game.deck = null;
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -794,16 +824,21 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
     if (result.method === "syncGame") {
       const gameId = result.gameId;
       let game = games[gameId];
+      // let gamebefore = {};
+      // gamebefore.gameOn = false;
       const gameOn = result.gameOn;
       const dealer = result.dealer;
       const players = result.players;
       const player = result.player;
       const spectators = result.spectators;
       const playerSlotHTML = result.playerSlotHTML;
-
       if (game === undefined) {
         game = {};
       }
+      // if (typeof(game.gameOn) != undefined){
+      //   gamebefore = JSON.parse(JSON.stringify(game));
+      // }
+
       // Sync players & spectators arrays
       game.gameOn = gameOn;
       game.dealer = dealer;
@@ -811,7 +846,32 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       game.player = player;
       game.spectators = spectators;
       game.playerSlotHTML = playerSlotHTML;
+
+      // // game start
+      // if((game.gameOn == true) && (gamebefore.gameOn == false)){
+      //   console.log(game.id + ": game start!")
+        
+      // }
+
+      // //game palying
+      // if((game.gameOn == true) && (gamebefore.gameOn == true)){
+      //   console.log(game.id + ": game playing!")
+      // }
+
+      // //game stop
+      // if((game.gameOn == false) && (gamebefore.gameOn == true)){
+      //   console.log(game.id + ": game stop!")
+      // }
+
+      // //game waiting
+      // if((game.gameOn == false) && (gamebefore.gameOn == false)){
+      //   console.log(game.id + ": game waiting")
+      // }
+      // console.log(gamebefore);
+      // console.log(game);
+      // console.log("################################################################");
     }
+
   });
   // The ClientId
   const clientId = guid();
@@ -826,7 +886,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
     avatar: "",
     cards: [],
     bet: 0,
-    balance: 5000,
+    balance: 0,
     sum: null,
     hasAce: false,
     isReady: false,
@@ -876,6 +936,18 @@ function partyId() {
   }
   return result;
 }
+
+// Random Round ID
+function roundId() {
+  var result = "";
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < 16; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 
 // console.log(partyId());
 

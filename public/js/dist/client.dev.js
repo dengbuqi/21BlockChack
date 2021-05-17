@@ -3,7 +3,7 @@
 if (window.location.href.length === 22) {
   $("#btnJoin").removeClass("noclick-nohide");
   $("#btnCreate").removeClass("noclick-nohide");
-  $("#btnOffline").removeClass("noclick-nohide");
+  $("#login").removeClass("noclick-nohide");
 } // HTML elements
 
 
@@ -29,7 +29,7 @@ var newPlayer = null;
 var offline = null;
 var ws = new WebSocket("ws://localhost:8080");
 var btnCreate = document.getElementById("btnCreate");
-var btnOffline = document.getElementById("btnOffline");
+var login = document.getElementById("login");
 var btnJoin = document.getElementById("btnJoin");
 var txtGameId = document.getElementById("txtGameId");
 var divPlayers = document.getElementById("divPlayers");
@@ -59,7 +59,7 @@ window.addEventListener('load', function () {
     //wait 500ms before you can click a button, to prevent error
     $("#btnJoin").removeClass("noclick-nohide");
     $("#btnCreate").removeClass("noclick-nohide");
-    $("#btnOffline").removeClass("noclick-nohide"); // ***
+    $("#login").removeClass("noclick-nohide"); // ***
 
     btnJoin.addEventListener("click", function (e) {
       $("#loading-screen").removeClass("hide-element");
@@ -103,7 +103,7 @@ window.addEventListener('load', function () {
         $("#game-room").removeClass("hide-element");
       }, 300);
     });
-    btnOffline.addEventListener("click", function (e) {
+    login.addEventListener("click", function (e) {
       var offline = true;
       $("#loading-screen").removeClass("hide-element");
       var payLoad = {

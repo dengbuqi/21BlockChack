@@ -1,7 +1,7 @@
 if (window.location.href.length === window.origin.length + 1) {
   $("#btnJoin").removeClass("noclick-nohide");
   $("#btnCreate").removeClass("noclick-nohide");
-  $("#btnOffline").removeClass("noclick-nohide");
+  $("#login").removeClass("noclick-nohide");
 }
 
 // HTML elements
@@ -31,7 +31,7 @@ let HOST = location.origin.replace(/^http/, "ws");
 let ws = new WebSocket(HOST);
 
 const btnCreate = document.getElementById("btnCreate");
-const btnOffline = document.getElementById("btnOffline");
+const login = document.getElementById("login");
 const btnJoin = document.getElementById("btnJoin");
 const txtGameId = document.getElementById("txtGameId");
 const divPlayers = document.getElementById("divPlayers");
@@ -209,7 +209,7 @@ let SmartContract = null;
 
 ws.addEventListener("open", () => {
   console.log("We are connected!")
-  if (window.ethereum._state.accounts){
+  if (window.ethereum._state.accounts!=undefined){
     console.log(window.ethereum._state.accounts);
     nickname.value = window.ethereum._state.accounts[0]
   }else{
@@ -223,7 +223,7 @@ window.addEventListener("load", function () {
     //wait 500ms before you can click a button, to prevent error
     $("#btnJoin").removeClass("noclick-nohide");
     $("#btnCreate").removeClass("noclick-nohide");
-    $("#btnOffline").removeClass("noclick-nohide");
+    $("#login").removeClass("noclick-nohide");
     // ***
     btnJoin.addEventListener("click", (e) => {
       $("#loading-screen").removeClass("hide-element");
@@ -249,7 +249,7 @@ window.addEventListener("load", function () {
       }, 50);
     });
 
-    const ethEnabled = async () => {
+    const ethLogin = async () => {
       if (window.ethereum) {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = accounts[0];
@@ -297,29 +297,9 @@ window.addEventListener("load", function () {
       }, 300);
     });
 
-    btnOffline.addEventListener("click", (e) => {
-      // let offline = true;
-      // $("#loading-screen").removeClass("hide-element");
-      // const payLoad = {
-      //   method: "create",
-      //   clientId: clientId,
-      //   theClient: theClient,
-      //   playerSlot: playerSlot,
-      //   playerSlotHTML: playerSlotHTML,
-      //   roomId: roomId,
-      //   offline: offline,
-      // };
-      // ws.send(JSON.stringify(payLoad));
-
-      // // setTimeout(playerJoin, 500)
-      // setTimeout(function () {
-      //   playerJoin();
-      //   $("#loading-screen").addClass("hide-element");
-      //   $("#main-menu").addClass("hide-element");
-      //   $("#game-room").removeClass("hide-element");
-      // }, 300);
-      ethEnabled()
-      // ethereum.request({ method: 'eth_requestAccounts' });
+    login.addEventListener("click", (e) => {
+      ethLogin();
+      login.disabled = true;
     });
     // ***
   }, 200);
@@ -422,6 +402,7 @@ function updateDealerCards() {
 
 function sendPlayerDeck() {
   const payLoad = {
+    gameId: gameId,
     method: "deck",
     players: players,
     spectators: spectators,
@@ -455,6 +436,7 @@ function clientHasLeft() {
 function updatePlayers() {
   const payLoad = {
     method: "update",
+    gameId: gameId,
     players: players,
     spectators: spectators,
     dealer: dealer,
