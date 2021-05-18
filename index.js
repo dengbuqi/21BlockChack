@@ -7,8 +7,207 @@ const app = express();
 const server = require("http").createServer(app);
 const PORT = process.env.PORT || 3000;
 const WebSocket = require("ws")
-
+const Web3 = require('web3');
 const wss = new WebSocket.Server({ server:server })
+
+let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
+const privateKey = '62fc187805f074167d3ca845cf86f0e252ad5ebe8b448fdcdecffcf7b66eb027';
+const contractAddress = '0x02f6Da66AB7d52783378962724823779648036D2'
+const ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "Games",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pot",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "playerTurn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "payed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "buyChips",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getNewCard",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerHand",
+		"outputs": [
+			{
+				"internalType": "uint8[]",
+				"name": "",
+				"type": "uint8[]"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			}
+		],
+		"name": "giveNewCard",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			}
+		],
+		"name": "payWinner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "placeBet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "playerBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferChips",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawFunds",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	}
+]
+
+acc = web3.eth.accounts.privateKeyToAccount(privateKey);
+let SmartContract = new web3.eth.Contract(ABI, contractAddress);
 
 // update the game log to Eth blockchain
 function update2BlockChain(method, log) {
@@ -137,6 +336,16 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       ////////////////////////////////////////////////////////////////////////////////////////////////////
       // set balance
       theClient.balance = 5000;
+      SmartContract.methods.playerBalance(theClient.nickname)
+                           .call(function(error, result){
+                            if(error === null){
+                              theClient.balance = result;
+                              console.log("inside",theClient.balance);
+                            }else{
+                              console.log("error",error);
+                              theClient.balance = 0;
+                          }});
+      console.log("outside",theClient.balance);
       ////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////

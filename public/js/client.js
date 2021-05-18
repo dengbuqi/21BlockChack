@@ -36,7 +36,7 @@ const btnJoin = document.getElementById("btnJoin");
 const txtGameId = document.getElementById("txtGameId");
 const divPlayers = document.getElementById("divPlayers");
 const divBoard = document.getElementById("divBoard");
-const balance = document.getElementById("balance");
+const chipsbalance = document.getElementById("chipsbalance");
 const account = document.getElementById("account");
 const chipsamount = document.getElementById("chipsamount");
 const buy = document.getElementById("buy");
@@ -60,7 +60,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0xf50f7435FeeDebBAC2E3D26280E0f8B7d8FAe4c1'
+const contractAddress = '0x02f6Da66AB7d52783378962724823779648036D2'
 const ABI = [
 	{
 		"inputs": [
@@ -258,14 +258,7 @@ let SmartContract = null;
 
 ws.addEventListener("open", () => {
   console.log("We are connected!")
-  if (window.ethereum.selectedAddress!=undefined){
-    nickname.value = window.ethereum.selectedAddress;
-    account.innerText = nickname.value;
-    window.web3 = new Web3(window.ethereum);
-    SmartContract = new window.web3.eth.Contract(ABI, contractAddress, nickname.value);
-  }else{
-    console.log('No account~');
-  }
+  
 });
 
 const ethLogin = async () => {
@@ -275,6 +268,12 @@ const ethLogin = async () => {
     account.innerText = nickname.value;
     window.web3 = new Web3(window.ethereum);
     SmartContract = new window.web3.eth.Contract(ABI, contractAddress, nickname.value);
+    SmartContract.methods.playerBalance(window.ethereum.selectedAddress)
+                           .call(function(error, result){
+                            if(error === null){
+                              chipsbalance.innerText = result;
+                            }
+                           });
     return true;
   }
   return false;
@@ -308,6 +307,24 @@ window.addEventListener("load", function () {
     $("#btnCreate").removeClass("noclick-nohide");
     $("#login").removeClass("noclick-nohide");
     // ***
+
+    // Check account and balance after after loading.
+    if (window.ethereum.selectedAddress!=undefined){
+      nickname.value = window.ethereum.selectedAddress;
+      account.innerText = nickname.value;
+      window.web3 = new Web3(window.ethereum);
+      SmartContract = new window.web3.eth.Contract(ABI, contractAddress, nickname.value);
+      SmartContract.methods.playerBalance(window.ethereum.selectedAddress)
+                           .call(function(error, result){
+                             if(error === null){
+                              chipsbalance.innerText = result;
+                             }
+                           });
+    }else{
+      console.log('No account~');
+    }
+    // ***
+
     btnJoin.addEventListener("click", (e) => {
       $("#loading-screen").removeClass("hide-element");
       const payLoadLength = {
@@ -402,7 +419,7 @@ leaveTable.addEventListener("click", (e) => {
 
 function playerJoin() {
   nickname = nickname.value;
-  console.log(theClient)
+  // console.log(theClient)
   theClient.nickname = nickname.value;
 
   avatar = avatar[slideIndex - 1].dataset.value;

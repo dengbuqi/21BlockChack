@@ -305,11 +305,11 @@ body {
   font-size: 20px;
   width: 38px;
 }
-#main-box #btnOffline {
+#main-box #login {
   margin-top: 40px;
   background-color: #143853;
 }
-#main-box #btnOffline:hover {
+#main-box #login:hover {
   background-color: #0d2436;
 }
 #main-box #btnCreate, #main-box #btnJoin {
