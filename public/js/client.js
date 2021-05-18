@@ -282,8 +282,7 @@ const ethLogin = async () => {
 
 const buyChips = async (addr, chipsamount) => {
    if (window.ethereum.selectedAddress === addr){
-    console.log(SmartContract.methods.playerBalance('0x475Db0B6e13A63aE7e702C68994b11E411D5b71E').call());
-
+    
     let TransactionObj = {
       from: addr,
       value: chipsamount * 1000000000000000 // 1x10^15 = 1chip
@@ -294,8 +293,8 @@ const buyChips = async (addr, chipsamount) => {
     });
     
     //Update chip amount on
-    console.log(SmartContract.methods.playerBalance('0x475Db0B6e13A63aE7e702C68994b11E411D5b71E').call());
-    
+    console.log(SmartContract.methods.playerBalance(addr).call());
+
     return true;
   }
   return false;
