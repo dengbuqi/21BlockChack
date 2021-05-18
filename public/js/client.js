@@ -60,7 +60,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0xE38e21b3e6a952bfB11de154E52B22828D58c0D3'
+const contractAddress = '0xf50f7435FeeDebBAC2E3D26280E0f8B7d8FAe4c1'
 const ABI = [
 	{
 		"inputs": [
@@ -253,7 +253,6 @@ const ABI = [
 		"type": "receive"
 	}
 ]
-
 let SmartContract = null;
 
 
@@ -262,6 +261,8 @@ ws.addEventListener("open", () => {
   if (window.ethereum.selectedAddress!=undefined){
     nickname.value = window.ethereum.selectedAddress;
     account.innerText = nickname.value;
+    window.web3 = new Web3(window.ethereum);
+    SmartContract = new window.web3.eth.Contract(ABI, contractAddress, nickname.value);
   }else{
     console.log('No account~');
   }
@@ -273,21 +274,7 @@ const ethLogin = async () => {
     nickname.value = window.ethereum.selectedAddress;
     account.innerText = nickname.value;
     window.web3 = new Web3(window.ethereum);
-    // window.web3.eth.sendTransaction({from: '0x475Db0B6e13A63aE7e702C68994b11E411D5b71E', data: '0x6C3d60B879dC894A9736EbCeBc9917AaD46e6B01'})
-    // .on('sending', function(payload){
-    //   console.log(payload);
-    // })
-    window.web3.eth.getProtocolVersion().then(function(protocolVersion) {
-      console.log(`Protocol Version: ${protocolVersion}`);
-    })
-
-    window.web3.eth.getGasPrice().then(function(gasPrice) {
-      console.log(`Gas Price: ${gasPrice}`);
-    })
-
-    window.web3.eth.getBlockNumber().then(function(blockNumber) {
-      console.log(`Block Number: ${blockNumber}`);
-    })
+    SmartContract = new window.web3.eth.Contract(ABI, contractAddress, nickname.value);
     return true;
   }
   return false;
@@ -295,6 +282,8 @@ const ethLogin = async () => {
 
 const buyChips = async (addr, chipsamount) => {
    if (window.ethereum.selectedAddress === addr){
+    console.log(SmartContract.methods.playerBalance('0x475Db0B6e13A63aE7e702C68994b11E411D5b71E').call());
+    
     console.log(addr);
     console.log(chipsamount);
     return true;
@@ -332,25 +321,6 @@ window.addEventListener("load", function () {
           }, 250);
         }
       }, 50);
-    });
-
-
-        window.web3.eth.getGasPrice().then(function(gasPrice) {
-          console.log(`Gas Price: ${gasPrice}`);
-        })
-
-        window.web3.eth.getBlockNumber().then(function(blockNumber) {
-          console.log(`Block Number: ${blockNumber}`);
-        })
-
-        SmartContract = new window.web3.eth.Contract(ABI, contractAddress, account);
-        return true;
-      }
-      return false;
-    }
-
-    btnBuy.addEventListener("click", (e)=>{
-      console.log(SmartContract.methods.playerBalance('0xdD338a35100fa9418Da8ff4bc544D2527502bAED').call());
     });
 
     btnCreate.addEventListener("click", (e) => {
