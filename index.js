@@ -209,6 +209,7 @@ const ABI = [
 acc = web3.eth.accounts.privateKeyToAccount(privateKey);
 let SmartContract = new web3.eth.Contract(ABI, contractAddress);
 
+
 // update the game log to Eth blockchain
 function update2BlockChain(method, log) {
   /*  method = 
@@ -331,25 +332,14 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       theClient.nickname = nickname;
       theClient.avatar = avatar;
       
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      // set balance
-      theClient.balance = 5000;
+      // check balance
       SmartContract.methods.playerBalance(theClient.nickname)
-                           .call(function(error, result){
-                            if(error === null){
-                              theClient.balance = result;
-                              console.log("inside",theClient.balance);
-                            }else{
-                              console.log("error",error);
-                              theClient.balance = 0;
-                          }});
-      console.log("outside",theClient.balance);
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-      
+      .call(function(error, result){
+      if(error === null){
+        theClient.balance = result;
+      }else{
+        theClient.balance = 0;
+      }
       if (game.spectators.length >= 7) {
         // Max players reached
         return;
@@ -447,6 +437,10 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
           );
         });
       }
+        
+      });
+
+
     }
 
     if (result.method === "terminateRoom") {
@@ -1149,7 +1143,7 @@ function partyId() {
 // Random Round ID
 function roundId() {
   var result = "";
-  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  var characters = "0123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < 16; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));

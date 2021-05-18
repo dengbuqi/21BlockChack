@@ -289,6 +289,12 @@ const buyChips = async (addr, chipsamount) => {
 
     SmartContract.methods.buyChips().send(TransactionObj).then((value) => {
       console.log(value);
+      SmartContract.methods.playerBalance(window.ethereum.selectedAddress)
+                           .call(function(error, result){
+                             if(error === null){
+                              chipsbalance.innerText = result;
+                             }
+                           });
     });
     
     //Update chip amount on
