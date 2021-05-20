@@ -40,6 +40,10 @@ const chipsbalance = document.getElementById("chipsbalance");
 const account = document.getElementById("account");
 const chipsamount = document.getElementById("chipsamount");
 const buy = document.getElementById("buy");
+const btnSendChips = document.getElementById("btnSendChips");
+const txtChipsToSend = document.getElementById("txtChipsToSend");
+const txtToAddress = document.getElementById("txtToAddress");
+
 // CSS
 let nickname = document.querySelector("#nickname");
 let avatar = document.querySelectorAll(".slideAvatars");
@@ -62,6 +66,117 @@ const leaveTable = document.querySelector("#leave-table");
 
 const contractAddress = '0x02f6Da66AB7d52783378962724823779648036D2'
 const ABI = [
+	{
+		"inputs": [],
+		"name": "buyChips",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum TOBJ.CardSuit",
+				"name": "suit",
+				"type": "uint8"
+			}
+		],
+		"name": "giveNewCard",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			}
+		],
+		"name": "markGamePayed",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "placeBet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newBalance",
+				"type": "uint256"
+			}
+		],
+		"name": "setBalance",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferChips",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
 	{
 		"inputs": [
 			{
@@ -102,20 +217,6 @@ const ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "buyChips",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getNewCard",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -131,71 +232,24 @@ const ABI = [
 		"name": "getPlayerHand",
 		"outputs": [
 			{
-				"internalType": "uint8[]",
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "value",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TOBJ.CardSuit",
+						"name": "suit",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct TOBJ.Card[]",
 				"name": "",
-				"type": "uint8[]"
+				"type": "tuple[]"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"internalType": "uint8",
-				"name": "cardValue",
-				"type": "uint8"
-			}
-		],
-		"name": "giveNewCard",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			}
-		],
-		"name": "payWinner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "placeBet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -216,41 +270,6 @@ const ABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "transferChips",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawFunds",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
 ]
 let SmartContract = null;
@@ -303,6 +322,25 @@ const buyChips = async (addr, chipsamount) => {
     return true;
   }
   return false;
+}
+
+const sendChips = async (amount, destination) => {
+  let TransactionObj = {
+    from: window.ethereum.selectedAddress,
+  }
+  if (TransactionObj.from){
+    SmartContract.methods.transferChips(destination, amount).send(TransactionObj).then(e => {
+      if (e.status == true){
+        SmartContract.methods.playerBalance(window.ethereum.selectedAddress)
+                           .call(function(error, result){
+                             if(error === null){
+                              chipsbalance.innerText = result;
+                             }
+                           });
+        window.alert("Chips sent succesfully");
+      }
+    })
+  }
 }
 
 // wiring events
@@ -384,6 +422,10 @@ window.addEventListener("load", function () {
 
     buy.addEventListener("click", (e) => {
       buyChips(account.innerText, chipsamount.value);
+    });
+
+    btnSendChips.addEventListener("click", (e) => {
+      sendChips(txtChipsToSend.value, txtToAddress.value)
     })
     // ***
   }, 200);
