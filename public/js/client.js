@@ -39,11 +39,11 @@ const divBoard = document.getElementById("divBoard");
 const chipsbalance = document.getElementById("chipsbalance");
 const account = document.getElementById("account");
 const chipsamount = document.getElementById("chipsamount");
-const chips2eth = document.getElementById("chips2eth");
 const buy = document.getElementById("buy");
 const btnSendChips = document.getElementById("btnSendChips");
 const txtChipsToSend = document.getElementById("txtChipsToSend");
 const txtToAddress = document.getElementById("txtToAddress");
+const btnDonateChips = document.getElementById("btnDonateChips");
 
 // CSS
 let nickname = document.querySelector("#nickname");
@@ -65,7 +65,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0x9Beb3A048B6517DDECa199bC6d950E3286ED47b4'
+const contractAddress = '0x3598a15af3Ee0F0deec7676C49b5a79c4bD990b6'
 const ABI = [
 	{
 		"inputs": [],
@@ -73,6 +73,49 @@ const ABI = [
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "chipsToDonate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "charityAddr",
+				"type": "address"
+			}
+		],
+		"name": "donate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			}
+		],
+		"name": "eNewCard",
+		"type": "event"
 	},
 	{
 		"inputs": [
@@ -274,6 +317,7 @@ const ABI = [
 	}
 ]
 let SmartContract = null;
+let myEvent = null;
 
 
 ws.addEventListener("open", () => {
@@ -329,6 +373,7 @@ const sendChips = async (amount, destination) => {
   let TransactionObj = {
     from: window.ethereum.selectedAddress,
   }
+  
   if (TransactionObj.from){
     SmartContract.methods.transferChips(destination, amount).send(TransactionObj).then(e => {
       if (e.status == true){
@@ -343,6 +388,12 @@ const sendChips = async (amount, destination) => {
     })
   }
 }
+
+const donateChips = async () => {
+
+}
+
+
 
 // wiring events
 window.addEventListener("load", function () {
@@ -420,9 +471,6 @@ window.addEventListener("load", function () {
       login.disabled = true;
     });
 
-    chipsamount.addEventListener("input",(e) => {
-      chips2eth.innerText = chipsamount.value/1000;
-    });
 
     buy.addEventListener("click", (e) => {
       buyChips(account.innerText, chipsamount.value);
@@ -430,6 +478,10 @@ window.addEventListener("load", function () {
 
     btnSendChips.addEventListener("click", (e) => {
       sendChips(txtChipsToSend.value, txtToAddress.value)
+    });
+
+    btnDonateChips.addEventListener("click", (e) => {
+      donateChips()
     })
     // ***
   }, 200);
@@ -513,7 +565,7 @@ function updatePlayerCards() {
     spectators: spectators,
     player: player,
     resetCards: resetCards,
-    gameId: gameId,
+    gameId:gameId,
   };
   ws.send(JSON.stringify(payLoad));
 }
@@ -526,7 +578,7 @@ function updateDealerCards() {
     player: player,
     dealer: dealer,
     dealersTurn: dealersTurn,
-    gameId: gameId,
+    gameId:gameId,
     // "dealerHiddenCardRemoveNext": dealerHiddenCardRemoveNext
   };
   ws.send(JSON.stringify(payLoad));

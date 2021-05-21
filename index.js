@@ -19,10 +19,128 @@ const privateKey = 'de5db2795ffef37ef878af692ed174857bb212fe8b2ad6737bd6a4e3fca5
 const contractAddress = '0x9Beb3A048B6517DDECa199bC6d950E3286ED47b4'
 const ABI = [
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			}
+		],
+		"name": "eNewCard",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "Games",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pot",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "playerTurn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "payed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "buyChips",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "chipsToDonate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "charityAddr",
+				"type": "address"
+			}
+		],
+		"name": "donate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerHand",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "value",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TOBJ.CardSuit",
+						"name": "suit",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct TOBJ.Card[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -93,6 +211,25 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "playerBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "player",
 				"type": "address"
 			},
@@ -128,100 +265,6 @@ const ABI = [
 	{
 		"stateMutability": "payable",
 		"type": "receive"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "Games",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "pot",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "playerTurn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "payed",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			}
-		],
-		"name": "getPlayerHand",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint8",
-						"name": "value",
-						"type": "uint8"
-					},
-					{
-						"internalType": "enum TOBJ.CardSuit",
-						"name": "suit",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct TOBJ.Card[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "playerBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	}
 ]
 
