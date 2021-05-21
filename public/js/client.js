@@ -39,6 +39,7 @@ const divBoard = document.getElementById("divBoard");
 const chipsbalance = document.getElementById("chipsbalance");
 const account = document.getElementById("account");
 const chipsamount = document.getElementById("chipsamount");
+const chips2eth = document.getElementById("chips2eth");
 const buy = document.getElementById("buy");
 const btnSendChips = document.getElementById("btnSendChips");
 const txtChipsToSend = document.getElementById("txtChipsToSend");
@@ -64,7 +65,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0x02f6Da66AB7d52783378962724823779648036D2'
+const contractAddress = '0x98143Ee17024a8Cb47e74FCd13D6D4bF26bb2a8D'
 const ABI = [
 	{
 		"inputs": [],
@@ -419,6 +420,9 @@ window.addEventListener("load", function () {
       login.disabled = true;
     });
 
+    chipsamount.addEventListener("input",(e) => {
+      chips2eth.innerText = chipsamount.value/1000;
+    });
 
     buy.addEventListener("click", (e) => {
       buyChips(account.innerText, chipsamount.value);
@@ -509,6 +513,7 @@ function updatePlayerCards() {
     spectators: spectators,
     player: player,
     resetCards: resetCards,
+    gameId: gameId,
   };
   ws.send(JSON.stringify(payLoad));
 }
@@ -521,6 +526,7 @@ function updateDealerCards() {
     player: player,
     dealer: dealer,
     dealersTurn: dealersTurn,
+    gameId: gameId,
     // "dealerHiddenCardRemoveNext": dealerHiddenCardRemoveNext
   };
   ws.send(JSON.stringify(payLoad));

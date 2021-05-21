@@ -12,8 +12,119 @@ const wss = new WebSocket.Server({ server:server })
 
 let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
 const privateKey = '62fc187805f074167d3ca845cf86f0e252ad5ebe8b448fdcdecffcf7b66eb027';
-const contractAddress = '0x02f6Da66AB7d52783378962724823779648036D2'
+const contractAddress = '0x98143Ee17024a8Cb47e74FCd13D6D4bF26bb2a8D'
 const ABI = [
+	{
+		"inputs": [],
+		"name": "buyChips",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum TOBJ.CardSuit",
+				"name": "suit",
+				"type": "uint8"
+			}
+		],
+		"name": "giveNewCard",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			}
+		],
+		"name": "markGamePayed",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "placeBet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newBalance",
+				"type": "uint256"
+			}
+		],
+		"name": "setBalance",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferChips",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
 	{
 		"inputs": [
 			{
@@ -54,20 +165,6 @@ const ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "buyChips",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getNewCard",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -83,71 +180,24 @@ const ABI = [
 		"name": "getPlayerHand",
 		"outputs": [
 			{
-				"internalType": "uint8[]",
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "value",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TOBJ.CardSuit",
+						"name": "suit",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct TOBJ.Card[]",
 				"name": "",
-				"type": "uint8[]"
+				"type": "tuple[]"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"internalType": "uint8",
-				"name": "cardValue",
-				"type": "uint8"
-			}
-		],
-		"name": "giveNewCard",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			}
-		],
-		"name": "payWinner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "placeBet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -168,59 +218,67 @@ const ABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "transferChips",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawFunds",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
 ]
 
 acc = web3.eth.accounts.privateKeyToAccount(privateKey);
 let SmartContract = new web3.eth.Contract(ABI, contractAddress);
-
-
-// update the game log to Eth blockchain
-function update2BlockChain(method, log) {
-  /*  method = 
-      deck
-      update
-      resetGameState
-  */
-  console.log(method);
-  console.log(log);
+const TransectionOBJ = {
+  from: acc.address,
+}
+const suits = {
+  "Club": 0,
+  "Diamond": 1,
+  "Heart": 2,
+  "Spade": 3,
 }
 
+const cards = {
+  "A": 1,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 5,
+  "6": 6,
+  "7": 7,
+  "8": 8,
+  "9": 9,
+  "10": 10,
+  "J": 11,
+  "Q": 12,
+  "K": 13,
+}
+// update the cards log to Eth blockchain
+function updateNewCard(roundId, addr, card, suit) {
+  // console.log("updateNewCard");
+  // console.log(roundId, addr, cards[card], suits[suit]);
+  SmartContract.methods.giveNewCard(roundId, addr, cards[card], suits[suit])
+  .send(TransectionOBJ)
+  .then((e) =>{
+    // console.log(e);
+  });
+}
+
+function setroundBalance(roundId, players) {
+  // console.log("setroundBalance");
+  // console.log();
+  for(let i = 0; i < players.length; i++){
+    SmartContract.methods.setBalance(players[i].nickname, players[i].balance)
+    .send(TransectionOBJ)
+    .then((e) =>{
+      // console.log(e);
+    });
+  }
+}
+
+function setroundPayed(roundId){
+  // console.log("setroundBalance", roundId);
+  SmartContract.methods.markGamePayed(roundId)
+  .send(TransectionOBJ)
+  .then((e) =>{
+    // console.log(e);
+  });
+}
 
 // Serve all the static files, (ex. index.html app.js style.css)
 app.use(express.static("public/"));
@@ -253,7 +311,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
   //################ What we need to upload to blockchain ######################//
   /*
       deck
-      update
+      updatePlayerCards
+      updateDealerCards
       resetGameState
   */
   //################ What we need to upload to blockchain ######################//
@@ -340,6 +399,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       }else{
         theClient.balance = 0;
       }
+      console.log(error);
       if (game.spectators.length >= 7) {
         // Max players reached
         return;
@@ -494,7 +554,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       game.deck = deck;
       game.players = players;
       game.dealer = dealer;
-      update2BlockChain(result.method, game);
+      console.log("round:", game.roundId, "start!");
+      setroundBalance(game.roundId, players);
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -566,6 +627,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       const spectators = result.spectators;
       const gameId = result.gameId;
       const game = games[gameId];
+      // const gamebefore = JSON.parse(JSON.stringify(game));
       const gameOn = result.gameOn;
       const dealersTurn = result.dealersTurn;
 
@@ -581,7 +643,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       game.players = players;
       game.dealer = dealer;
       game.deck = deck;
-      update2BlockChain(result.method, game);
+      
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
@@ -701,17 +763,25 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       const players = result.players;
       const player = result.player;
       const spectators = result.spectators;
-
+      const gameId = result.gameId;
+      const game = games[gameId];
       const payLoad = {
         method: "updatePlayerCards",
         players: players,
         player: player,
         resetCards: resetCards,
       };
+
+      for(let i = 0; i < players.length; i++){
+        if(players[i].cards.length != game["players"][i].cards.length){
+          updateNewCard(game.roundId, players[i].nickname,
+          players[i].cards[players[i].cards.length-1].value.card,
+          players[i].cards[players[i].cards.length-1].suit);
+        }
+      }
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
-
     }
 
     if (result.method === "updateDealerCards") {
@@ -720,6 +790,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       const player = result.player;
       const dealer = result.dealer;
       const dealersTurn = result.dealersTurn;
+      const gameId = result.gameId;
+      const game = games[gameId];
       // const dealerHiddenCardRemoveNext = result.dealerHiddenCardRemoveNext
       const payLoad = {
         method: "updateDealerCards",
@@ -729,6 +801,13 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         dealersTurn: dealersTurn,
         // "dealerHiddenCardRemoveNext": dealerHiddenCardRemoveNext
       };
+      if (dealer.cards.length != game.dealer.cards.length){
+        updateNewCard(game.roundId, acc.address, 
+        dealer.cards[dealer.cards.length-1].value.card,
+        dealer.cards[dealer.cards.length-1].suit);
+      }
+
+
       if (dealersTurn === false) {
         spectators.forEach((c) => {
           clients[c.clientId].ws.send(JSON.stringify(payLoad));
@@ -741,6 +820,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
           clients[c.clientId].ws.send(JSON.stringify(payLoad));
         });
       }
+
+      
     }
 
     if (result.method === "dealersTurn") {
@@ -963,7 +1044,8 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         game: game,
       };
       game.roundState = result.method;
-      update2BlockChain(result.method, game);
+      setroundBalance(game["roundId"], players);
+      setroundPayed(game["roundId"]);
       game.roundId = null;
       game.roundState = null;
       game.deck = null;
