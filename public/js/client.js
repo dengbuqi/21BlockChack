@@ -65,7 +65,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0x98143Ee17024a8Cb47e74FCd13D6D4bF26bb2a8D'
+const contractAddress = '0x9Beb3A048B6517DDECa199bC6d950E3286ED47b4'
 const ABI = [
 	{
 		"inputs": [],

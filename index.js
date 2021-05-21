@@ -8,11 +8,15 @@ const server = require("http").createServer(app);
 const PORT = process.env.PORT || 3000;
 const WebSocket = require("ws")
 const Web3 = require('web3');
-const wss = new WebSocket.Server({ server:server })
+const wss = new WebSocket.Server({ server:server });
+const fs = require("fs");
+const roundIdLog = fs.createWriteStream('roundIdLog.txt', {
+  flags: 'a' // 'a' means appending (old data will be preserved)
+});
 
 let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
-const privateKey = '62fc187805f074167d3ca845cf86f0e252ad5ebe8b448fdcdecffcf7b66eb027';
-const contractAddress = '0x98143Ee17024a8Cb47e74FCd13D6D4bF26bb2a8D'
+const privateKey = 'de5db2795ffef37ef878af692ed174857bb212fe8b2ad6737bd6a4e3fca5cfbe';
+const contractAddress = '0x9Beb3A048B6517DDECa199bC6d950E3286ED47b4'
 const ABI = [
 	{
 		"inputs": [],
@@ -279,6 +283,8 @@ function setroundPayed(roundId){
     // console.log(e);
   });
 }
+
+
 
 // Serve all the static files, (ex. index.html app.js style.css)
 app.use(express.static("public/"));
@@ -556,6 +562,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       game.dealer = dealer;
       console.log("round:", game.roundId, "start!");
       setroundBalance(game.roundId, players);
+      roundIdLog.write(game.roundId+",\n");
       spectators.forEach((c) => {
         clients[c.clientId].ws.send(JSON.stringify(payLoad));
       });
