@@ -15,9 +15,47 @@ const roundIdLog = fs.createWriteStream('roundIdLog.txt', {
 });
 
 let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
-const privateKey = 'de5db2795ffef37ef878af692ed174857bb212fe8b2ad6737bd6a4e3fca5cfbe';
-const contractAddress = '0x9Beb3A048B6517DDECa199bC6d950E3286ED47b4'
+const privateKey = 'd87598439afbdde42ccbbfe83ef0b26027ddeb3b2e5705bcca40f2e817025cc4';
+const contractAddress = '0x1e1D7d65568e3Ef99ae8b0A3bd2969273e525A22'
 const ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "charityAddr",
+				"type": "address"
+			}
+		],
+		"name": "addCharityAddr",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "buyChips",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "chipsToDonate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "charityAddr",
+				"type": "address"
+			}
+		],
+		"name": "donateChips",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -38,110 +76,16 @@ const ABI = [
 				"internalType": "uint8",
 				"name": "cardValue",
 				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "suit",
+				"type": "uint8"
 			}
 		],
 		"name": "eNewCard",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "Games",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "pot",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "playerTurn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "payed",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "buyChips",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "chipsToDonate",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "charityAddr",
-				"type": "address"
-			}
-		],
-		"name": "donate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			}
-		],
-		"name": "getPlayerHand",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint8",
-						"name": "value",
-						"type": "uint8"
-					},
-					{
-						"internalType": "enum TOBJ.CardSuit",
-						"name": "suit",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct TOBJ.Card[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	},
 	{
 		"inputs": [
@@ -211,25 +155,6 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "playerBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "player",
 				"type": "address"
 			},
@@ -265,6 +190,100 @@ const ABI = [
 	{
 		"stateMutability": "payable",
 		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "Games",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pot",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "playerTurn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "payed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerHand",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "value",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TOBJ.CardSuit",
+						"name": "suit",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct TOBJ.Card[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "playerBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
 ]
 

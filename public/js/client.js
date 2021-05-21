@@ -46,6 +46,8 @@ const txtToAddress = document.getElementById("txtToAddress");
 const btnDonateChips = document.getElementById("btnDonateChips");
 const txtChipsToDonate = document.getElementById("txtChipsToDonate");
 const txtToCharity = document.getElementById("txtToCharity");
+const txtInspectGameID = document.getElementById("txtInspectGameID");
+const btnInspect = document.getElementById("btnInspect");
 
 // CSS
 let nickname = document.querySelector("#nickname");
@@ -67,78 +69,8 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0x8e39e240464Ad18c18393011E4deeAD16B03713A'
+const contractAddress = '0x1e1D7d65568e3Ef99ae8b0A3bd2969273e525A22'
 const ABI = [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint8",
-				"name": "cardValue",
-				"type": "uint8"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint8",
-				"name": "suit",
-				"type": "uint8"
-			}
-		],
-		"name": "eNewCard",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "Games",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "pot",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "playerTurn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "payed",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
 	{
 		"inputs": [
 			{
@@ -178,40 +110,35 @@ const ABI = [
 		"type": "function"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "gameID",
 				"type": "uint256"
 			},
 			{
+				"indexed": true,
 				"internalType": "address",
 				"name": "player",
 				"type": "address"
-			}
-		],
-		"name": "getPlayerHand",
-		"outputs": [
+			},
 			{
-				"components": [
-					{
-						"internalType": "uint8",
-						"name": "value",
-						"type": "uint8"
-					},
-					{
-						"internalType": "enum TOBJ.CardSuit",
-						"name": "suit",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct TOBJ.Card[]",
-				"name": "",
-				"type": "tuple[]"
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "cardValue",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "suit",
+				"type": "uint8"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
+		"name": "eNewCard",
+		"type": "event"
 	},
 	{
 		"inputs": [
@@ -281,25 +208,6 @@ const ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "playerBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "player",
 				"type": "address"
 			},
@@ -335,6 +243,100 @@ const ABI = [
 	{
 		"stateMutability": "payable",
 		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "Games",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pot",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "playerTurn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "payed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerHand",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "value",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TOBJ.CardSuit",
+						"name": "suit",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct TOBJ.Card[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "playerBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
 ]
 let SmartContract = null;
@@ -426,7 +428,15 @@ const donateChips = async (amount, destination) => {
   })
 }
 
-
+const inspectGame = async ID => {
+  SmartContract.getPastEvents('eNewCard', {
+    filter: {gameID: ID}, // Using an array means OR: e.g. 20 or 23
+    fromBlock: 0,
+    toBlock: 'latest'
+  }).then(function(events){
+    console.log(events) // same results as the optional callback above
+    });
+}
 
 // wiring events
 window.addEventListener("load", function () {
@@ -515,6 +525,9 @@ window.addEventListener("load", function () {
 
     btnDonateChips.addEventListener("click", (e) => {
       donateChips(txtChipsToDonate.value, txtToCharity.value)
+    });
+    btnInspect.addEventListener("click", (e) => {
+      inspectGame(txtInspectGameID.value)
     })
     // ***
   }, 200);
