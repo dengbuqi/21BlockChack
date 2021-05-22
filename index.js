@@ -15,8 +15,8 @@ const roundIdLog = fs.createWriteStream('roundIdLog.txt', {
 });
 
 let web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
-const privateKey = 'd87598439afbdde42ccbbfe83ef0b26027ddeb3b2e5705bcca40f2e817025cc4';
-const contractAddress = '0x1e1D7d65568e3Ef99ae8b0A3bd2969273e525A22'
+const privateKey = 'de5db2795ffef37ef878af692ed174857bb212fe8b2ad6737bd6a4e3fca5cfbe';
+const contractAddress = '0x847fA2427Eec120ea009747E53a1755B5F7F75c1'
 const ABI = [
 	{
 		"inputs": [

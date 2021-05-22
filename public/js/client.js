@@ -48,7 +48,30 @@ const txtChipsToDonate = document.getElementById("txtChipsToDonate");
 const txtToCharity = document.getElementById("txtToCharity");
 const txtInspectGameID = document.getElementById("txtInspectGameID");
 const btnInspect = document.getElementById("btnInspect");
+const inspectgameresult = document.getElementById("inspectgameresult");
 
+const suits = {
+  "0": "Club",
+  "1": "Diamond",
+  "2": "Heart",
+  "3": "Spade",
+}
+
+const cards = {
+  "1": "A",
+  "2": "2",
+  "3": "3",
+  "4": "4",
+  "5": "5",
+  "6": "6",
+  "7": "7",
+  "8": "8",
+  "9": "9",
+  "10": "10",
+  "11": "J",
+  "12": "Q",
+  "13": "K",
+}
 // CSS
 let nickname = document.querySelector("#nickname");
 let avatar = document.querySelectorAll(".slideAvatars");
@@ -69,7 +92,7 @@ let resetCards = false;
 const leaveTable = document.querySelector("#leave-table");
 // CSS
 
-const contractAddress = '0x1e1D7d65568e3Ef99ae8b0A3bd2969273e525A22'
+const contractAddress = '0x847fA2427Eec120ea009747E53a1755B5F7F75c1'
 const ABI = [
 	{
 		"inputs": [
@@ -428,13 +451,33 @@ const donateChips = async (amount, destination) => {
   })
 }
 
-const inspectGame = async ID => {
+const inspectGame = async (ID) => {
   SmartContract.getPastEvents('eNewCard', {
     filter: {gameID: ID}, // Using an array means OR: e.g. 20 or 23
     fromBlock: 0,
     toBlock: 'latest'
   }).then(function(events){
-    console.log(events) // same results as the optional callback above
+    out = {};
+    for (let i= 0; i < events.length; i++) {
+      if(!out[events[i].returnValues.player]){
+        out[events[i].returnValues.player] = [];
+      }
+      carImg =  '<img style="width: 15%; padding: 0 5px;" src="/imgs/' 
+                + suits[events[i].returnValues.suit] 
+                + cards[events[i].returnValues.cardValue]
+                +'.svg">';
+      out[events[i].returnValues.player].push(carImg);
+    }
+    outhtml = '';
+    players = Object.keys(out);
+    for (let i = 0; i < players.length; i++){
+      outhtml += '<h3>'+players[i]+'</h3>';
+      for (let  j = 0; j < out[players[i]].length; j++){
+        outhtml += out[players[i]][j];
+      }
+    }
+    inspectgameresult.innerHTML =  outhtml ;
+    inspectgameresult.scrollIntoView();
     });
 }
 
