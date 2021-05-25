@@ -967,6 +967,8 @@ ws.onmessage = (message) => {
       window.history.pushState("offline_page", "Offline Mode", "/");
       $("#invite-link-box").remove();
       $("#users-online-label").text("OFFLINE MODE");
+    }else{
+      $("#txtRoomId").text(roomId);
     }
   }
 
@@ -977,10 +979,12 @@ ws.onmessage = (message) => {
     spectators = game.spectators;
     playerSlotHTML = response.playerSlotHTML;
     roomId = response.roomId;
-
-    roomId = gameId.substring(gameId.length - 6);
-    if (offline !== true) {
+    // roomId = gameId.substring(gameId.length - 6);
+    if (offline != true) {
+      $("#txtRoomId").text(roomId);
       window.history.pushState("game", "Title", "/" + roomId);
+    }else{
+      $("#txtRoomId").text(roomId);
     }
   }
 
@@ -1358,6 +1362,7 @@ ws.onmessage = (message) => {
     deck = response.deck;
     clientDeal = response.clientDeal;
     gameOn = response.gameOn;
+    roundId = response.roundId;
 
     // Optimize this later so it doesnt fire like every second
     if (gameOn) {
@@ -1366,6 +1371,7 @@ ws.onmessage = (message) => {
           $("#bets-container").addClass("noclick");
         }
       }
+      $("#txtRoundId").text(roundId);
       $(".empty-slot").addClass("noclick");
       $("#leave-table").addClass("noclick");
       $("#deal-start-label").addClass("hide-element");

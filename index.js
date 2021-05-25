@@ -609,6 +609,7 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
       const deck = result.deck;
       const clientDeal = result.clientDeal;
       const gameOn = result.gameOn;
+      game.roundId = roundId();
       const payLoad = {
         method: "deck",
         players: players,
@@ -616,8 +617,9 @@ wss.on("connection", (ws) => { // wsServer || wss AND request || connection
         deck: deck,
         gameOn: gameOn,
         clientDeal: clientDeal,
+        roundId: game.roundId,
       };
-      game.roundId = roundId();
+      
       game.roundState = result.method;
       game.deck = deck;
       game.players = players;
