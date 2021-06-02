@@ -5,6 +5,8 @@ Based on [Blackjack-Game-Multiplayer](https://github.com/CarlssonK/Blackjack-Gam
 
 [Smart Contract part](https://github.com/dengbuqi/21BlockChack)
 
+[21BlockChack demo video](https://www.youtube.com/watch?v=hDYOB-JUI7A)   
+
 <code>
 npm install
   
